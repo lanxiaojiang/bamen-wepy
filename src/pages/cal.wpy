@@ -1,0 +1,172 @@
+<style lang="less">
+
+.flex-wrp {
+  display: flex;
+  margin: 5px auto;
+}
+.my-btn{
+  width: 30%;
+  margin: 1rem 35%;
+}
+.rs-box {
+  text-align: right;
+  padding: 0 5%;
+}
+.rs-row {
+  padding: 2px 0;
+  .rs-td-center {
+    text-align: center;
+  }
+}
+.rs-th {
+  color: #fff;
+  background-color: #6888a1;
+  text-align: center;
+}
+.rs-row-odd {
+  background-color: #F4F4F4;
+}
+</style>
+<template>
+  <div>
+    <view class="container">
+      <van-cell-group>
+          <van-field
+            id="amount"
+            label="每年投入"
+            border="true"
+            value="{{ amount }}"
+            left-icon="gold-coin-o"
+            bind:change="doblur"
+            bindfocus="doFocus" 
+            bindblur="doblur"
+          />
+      </van-cell-group>
+      <van-cell-group>
+          <van-field
+            id="rate"
+            label="年化收益"
+            border="true"
+            value="{{ rate }}"
+            left-icon="discount"
+            bind:change="doblur"
+            bindfocus="doFocus" 
+            bindblur="doblur"
+          />
+      </van-cell-group>
+      <van-cell-group>
+          <van-field
+            id="years"
+            label="定投年限"
+            border="true"
+            value="{{ years }}"
+            left-icon="chart-trending-o"
+            bind:change="doblur"
+            bindfocus="doFocus" 
+            bindblur="doblur"
+          />
+      </van-cell-group>
+    </view>
+    <van-button custom-class="my-btn" type="primary" @tap="cal" loading="{{loading}}" loading-text="计算中...">计算</van-button>
+    <view class="rs-box">
+      <van-row wx:if="{{showTH}}" custom-class="rs-row rs-th">
+        <van-col span="4">
+            年限
+          </van-col>
+          <van-col span="7">
+            总资
+          </van-col>
+          <van-col span="7">
+            总本
+          </van-col>
+          <van-col span="6">
+            收益
+          </van-col>
+      </van-row>
+      <view wx:key="uniq" wx:for="{{result}}">
+        <van-row custom-class="{{index%2===0?'rs-row rs-row-odd':'rs-row'}}" >
+          <van-col span="4" custom-class="rs-td-center">
+            {{item.year}}
+          </van-col>
+          <van-col span="7">
+            {{item.money}}
+          </van-col>
+          <van-col span="7">
+            {{item.base}}
+          </van-col>
+          <van-col span="6"  custom-class="rs-td-center">
+            {{item.gain}}
+          </van-col>
+        </van-row>
+      </view>
+    </view>
+  </div>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '复利计算器',
+    usingComponents: {
+      'van-button': '/components/van/button/index',
+      'van-cell': '/components/van/cell/index',
+      'van-cell-group': '/components/van/cell-group/index',
+      'van-field': '/components/van/field/index',
+      'van-row': '/components/van/row/index',
+      'van-col': '/components/van/col/index'
+    }
+  };
+  components = {};
+
+  data = {
+    amount: 100000,
+    rate: 1.05,
+    years: 10,
+    showTH: false,
+    result: []
+  };
+
+  computed = {
+    now() {
+      return +new Date();
+    }
+  };
+
+  methods = {
+    doFocus(e) {
+      const id = e.currentTarget.id;
+      this[id] = '';
+    },
+    doblur(e) {
+      const id = e.currentTarget.id;
+      this[id] = e.detail.value;
+    },
+    cal() {
+      this.result = [];
+      let sum = 0;
+      for (let i = 0; i < this.years; i++) {
+        sum += 1 * this.amount;
+        sum *= this.rate;
+        this.result.push({
+          uniq: `year_${i}`,
+          year: i + 1,
+          money: Number.parseInt(sum),
+          base: (i + 1) * this.amount,
+          gain: (Number.parseInt(sum) / ((i + 1) * this.amount)).toFixed(2)
+        });
+      }
+      this.showTH = true;
+      this.$apply();
+    },
+    async request() {
+      this.$apply();
+    }
+  };
+
+  events = {};
+
+  async onLoad() {}
+}
+</script>

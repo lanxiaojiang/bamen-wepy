@@ -1,0 +1,120 @@
+<style lang="less">
+.input-box {
+  margin: 1rem auto;
+  border: 1px #666 solid;
+  padding-left: 1rem;
+}
+.red{
+  color: #f00;
+}
+.green{
+  color: green;
+}
+</style>
+
+<template>
+  <view class="container">
+    <view class="flex-wrp" style="flex-direction:row;width:80%;">
+      <van-cell-group>
+        <van-field
+          id="symbol"
+          label="symbol"
+          border="true"
+          value="{{ symbol }}"
+          left-icon="service-o"
+          bind:change="doblur"
+          bindfocus="doFocus" 
+          bindblur="doblur"
+        />
+      </van-cell-group>
+      
+      <van-cell-group>
+        <van-cell
+          icon="star-o"
+          size="large"
+          title="名字"
+          value="{{name}}"
+        />
+        <van-cell
+          icon="gold-coin-o"
+          size="large"
+          title="价格"
+          value="{{price}}"
+        />
+        <van-cell
+          icon="chart-trending-o"
+          size="large"
+          title="涨跌"
+        >
+        <view class="van-cell-text {{gainsValue>0?'green':'red'}}">{{gainsValue}}</view>
+        </van-cell>
+        <van-cell
+          icon="discount"
+          size="large"
+          title="比例"
+        >
+          <view class="van-cell-text {{gainsValue>0?'green':'red'}}">{{gains}}</view>
+        </van-cell>
+      </van-cell-group>
+      <van-button round size="large" type="primary" @tap="request" loading="{{loading}}" loading-text="加载中...">走你</van-button>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '价格查询器',
+    usingComponents: {
+      'van-button': '/components/van/button/index',
+      'van-cell': '/components/van/cell/index',
+      'van-cell-group': '/components/van/cell-group/index',
+      'van-field': '/components/van/field/index'
+    }
+  };
+  components = {};
+
+  data = {
+    symbol: 'bili',
+    name: '',
+    price: '',
+    gainsValue: '',
+    gains: '',
+    loading: false
+  };
+
+  computed = {};
+
+  methods = {
+    doFocus(e) {
+      const id = e.currentTarget.id;
+      this[id] = '';
+    },
+    doblur(e) {
+      const id = e.currentTarget.id;
+      this[id] = e.detail.value || e.detail;
+    },
+    async request(e) {
+      this.loading = true;
+      const resp = await wepy.request(
+        `https://api.hox.com/v1.0.0/stock/price?symbol=${this.symbol}`
+      );
+      this.loading = false;
+      if (resp && resp.statusCode === 200) {
+        this.name = resp.data.data.cname;
+        this.price = resp.data.data.price;
+        this.gains = resp.data.data.gains;
+        this.gainsValue = resp.data.data.gainsValue;
+
+        this.$apply();
+      }
+    }
+  };
+
+  events = {};
+
+  async onLoad() {}
+}
+</script>

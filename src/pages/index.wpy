@@ -1,86 +1,27 @@
 <style lang="less">
-.page-section {
-  margin-bottom: 20rpx;
-}
-.flex-wrp {
+.nav_list {
+  color: #fff;
   display: flex;
-}
-.bc_green {
-  background: green;
-  width: 100px;
-  height: 100px;
-}
-.bc_red {
-  background: red;
-  width: 100px;
-  height: 100px;
-}
-.bc_blue {
-  background: blue;
-  width: 100px;
-  height: 100px;
-}
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  margin: 5px auto ;
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-.input-box {
-  border:1px #666 solid;
-  padding-left: 1rem;
-}
-.hr {
-  margin: 1rem auto;
-}
-.flex-wrp{
-  margin: 5px auto;
-}
-.rs-box {
-  padding: 0 10%;
+  font-size: 26rpx;
+  justify-content: space-between;
+  padding: 17rpx 50rpx;
+  navigator {
+    text-align: center;
+  }
+  .nav_text {
+    font-size: 40rpx;
+    padding: 10px 1rem;
+  }
 }
 </style>
 <template>
-  <view class="container">
-      <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" />
-      <text class="info">{{ userInfo.nickName }}</text>
-  </view>
-  <view class="container">
-    <view class="flex-wrp" style="flex-direction:row;">
-    <label>每年投入:</label><input id="amount" bindblur="doblur" class="input-box" type="number" value="{{amount}}" />
-    </view>
-    <view class="flex-wrp" style="flex-direction:row;">
-    <label>年化收益:</label><input id="rate" bindblur="doblur" class="input-box" type="number" value="{{rate}}" />
-    </view>
-    <view class="flex-wrp" style="flex-direction:row;">
-    <label>定投年限:</label><input id="years" bindblur="doblur" class="input-box" type="number" value="{{years}}" />
-    </view>
-    <view class="flex-wrp" style="flex-direction:row;">
-    <button
-      type="primary"
-      size="mini"
-      hover-class="other-button-hover"
-      @tap="cal"
-    >
-      计算
-    </button>
-    </view>
-  </view>
-  <progress class="hr" percent="100" activeColor="#999" />
-  <view class="rs-box">
-    <view wx:for="{{result}}">
-    第{{item.year}}年底: ￥ {{item.money}}
-  </view>
+  <view class="nav_list">
+    <navigator open-type="navigate" url="/pages/cal">
+        <button class="nav_text" type="primary">复利计算器</button>
+    </navigator>
+    <navigator open-type="navigate" url="/pages/fav">
+        <button class="nav_text" type="primary">价格查询器</button>
+    </navigator>
   </view>
 </template>
 
@@ -89,74 +30,18 @@ import wepy from 'wepy';
 
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '复利计算器'
+    navigationBarTitleText: '小蓝的八门神器'
   };
-  components = {
-  };
+  components = {};
 
-  data = {
-    userInfo: {
-      nickName: '加载中...'
-    },
-    amount: 100000,
-    rate: 1.05,
-    years: 10,
-    result: []
-  };
+  data = {};
 
-  computed = {
-    now() {
-      return +new Date();
-    }
-  };
+  computed = {};
 
-  methods = {
-    doblur(e) {
-      const id = e.currentTarget.id;
-      this[id] = e.detail.value;
-    },
-    cal() {
-      this.result = [];
-      let sum = 0;
-      for (let i = 0; i < this.years; i++) {
-        sum += this.amount;
-        sum *= this.rate;
-        this.result.push({
-          year: i + 1,
-          money: `${Number.parseInt(sum)}`.replace(/\d{1,3}(?=(\d{3})+$)/g, '$&,')
-        });
-      }
-      console.log(this.result);
-      this.$apply();
-    },
-    async request() {
-      const resp = await wepy.request('https://api.tik.com/v1.0.0/ping');
-      this.netrst = resp.data.data.name;
-      this.$apply();
-    },
-    counterEmit(...args) {
-      let $event = args[args.length - 1];
-      console.log(
-        `${this.$name} receive ${$event.name} from ${$event.source.$name}`
-      );
-    }
-  };
+  methods = {};
 
-  events = {
-    'index-emit': (...args) => {
-      let $event = args[args.length - 1];
-      console.log(
-        `${this.$name} receive ${$event.name} from ${$event.source.$name}`
-      );
-    }
-  };
+  events = {};
 
-  async onLoad() {
-    const userInfo = await this.$parent.getUserInfo();
-    console.log(userInfo);
-    console.log(this.$parent);
-    this.userInfo = userInfo;
-    this.$apply();
-  }
+  async onLoad() {}
 }
 </script>

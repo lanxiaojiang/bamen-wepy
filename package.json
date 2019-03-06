@@ -17,6 +17,7 @@
   "author": "lanhao <lanhao@tik.com>",
   "license": "MIT",
   "dependencies": {
+    "vant-weapp": "^0.5.6",
     "wepy": "^1.7.2",
     "wepy-async-function": "^1.4.4",
     "wepy-com-toast": "^1.0.2"
